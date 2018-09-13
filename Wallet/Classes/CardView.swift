@@ -53,7 +53,8 @@ open class CardView: UIView {
             panStartPoint = gestureRecognizer.location(in: self)
         }
         
-        if panStartPoint!.y - gestureRecognizer.location(in: self).y > 30 {
+        let delta = panStartPoint!.y - gestureRecognizer.location(in: self).y
+        if delta > 30 || delta < -30 {
             walletView?.dismissPresentedCardView(animated: true)
         } else {
             switch gestureRecognizer.state {
@@ -87,7 +88,8 @@ open class CardView: UIView {
     let tapGestureRecognizer    = UITapGestureRecognizer()
     let panGestureRecognizer    = UIPanGestureRecognizer()
     let longGestureRecognizer   = UILongPressGestureRecognizer()
-    let swipeGestureRecognizer   = UISwipeGestureRecognizer()
+    let swipeUpGestureRecognizer   = UISwipeGestureRecognizer()
+    let swipeDownGestureRecognizer   = UISwipeGestureRecognizer()
     
     func setupGestures() {
         
@@ -95,19 +97,28 @@ open class CardView: UIView {
         tapGestureRecognizer.delegate = self
         addGestureRecognizer(tapGestureRecognizer)
         
-        panGestureRecognizer.addTarget(self, action: #selector(CardView.panned(gestureRecognizer:)))
-        panGestureRecognizer.delegate = self
-        addGestureRecognizer(panGestureRecognizer)
+//        panGestureRecognizer.addTarget(self, action: #selector(CardView.panned(gestureRecognizer:)))
+//        panGestureRecognizer.delegate = self
+//        addGestureRecognizer(panGestureRecognizer)
         
-//        swipeGestureRecognizer.addTarget(self, action: #selector(CardView.swiped(gestureRecognizer:)))
-//        swipeGestureRecognizer.delegate = self
-//        swipeGestureRecognizer.direction = .up
-//        addGestureRecognizer(swipeGestureRecognizer)
+        swipeUpGestureRecognizer.addTarget(self, action: #selector(CardView.swiped(gestureRecognized:)))
+        swipeUpGestureRecognizer.delegate = self
+        swipeUpGestureRecognizer.direction = .up
+        addGestureRecognizer(swipeUpGestureRecognizer)
+        
+        swipeDownGestureRecognizer.addTarget(self, action: #selector(CardView.swiped(gestureRecognized:)))
+        swipeDownGestureRecognizer.delegate = self
+        swipeDownGestureRecognizer.direction = .down
+        addGestureRecognizer(swipeDownGestureRecognizer)
         
         longGestureRecognizer.addTarget(self, action: #selector(CardView.longPressed(gestureRecognizer:)))
         longGestureRecognizer.delegate = self
         addGestureRecognizer(longGestureRecognizer)
         
+    }
+    
+    @objc func swiped(gestureRecognized: UISwipeGestureRecognizer) {
+        walletView?.dismissPresentedCardView(animated: true)
     }
     
     
