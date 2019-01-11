@@ -49,6 +49,7 @@ open class WalletView: UIView {
      - parameter completion: A block object to be executed when the animation sequence ends.
      */
     
+    open var shouldCollapseSingleCard = false
     open var isPossibleOpenCardDetails = true
     
     open func present(cardView: CardView, animated: Bool, completion: LayoutCompletion? = nil) {
@@ -160,8 +161,10 @@ open class WalletView: UIView {
         //            self.presentedCardView = nil
         //        }
         
-        if newInsertedCardViews.count == 1 {
+        if newInsertedCardViews.count == 1 && !shouldCollapseSingleCard {
             presentedCardView = newInsertedCardViews.first
+        } else if newInsertedCardViews.count == 1 {
+            presentedCardView = nil
         }
         
         return newInsertedCardViews
@@ -347,7 +350,7 @@ open class WalletView: UIView {
         
         self.insertedCardViews = cardViews
         
-        if insertedCardViews.count == 1 {
+        if insertedCardViews.count == 1 && !shouldCollapseSingleCard {
             presentedCardView = insertedCardViews.first
         } else {
             presentedCardView = nil
@@ -385,7 +388,7 @@ open class WalletView: UIView {
         
         preferableCardViewHeight = collapsedCardViewHeight
         
-        if insertedCardViews.count <= 1 || presentedCardView == nil {
+        if (!shouldCollapseSingleCard && insertedCardViews.count <= 1) || presentedCardView == nil {
             completion?(true)
             return
         }
@@ -545,7 +548,7 @@ open class WalletView: UIView {
         
         maximumCardViewHeight = frame.height - (cardViewTopInset + collapsedCardViewStackHeight)
         
-        if insertedCardViews.count < 2 || insertedCardViews.count > 5 {
+        if (insertedCardViews.count < 2 && !shouldCollapseSingleCard) || insertedCardViews.count > 5 {
             cardViewHeight = maximumCardViewHeight
         } else {
             cardViewHeight = min(preferableCardViewHeight, maximumCardViewHeight)
